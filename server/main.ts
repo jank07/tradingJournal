@@ -1,21 +1,22 @@
-import { serve } from "https://deno.land/std/http/server.ts";
-import { registerUser } from "./controllers/auth.ts";
+import { Application, Router } from "oak";
+import { config } from "dotenv";
+import { register } from "./routes/auth.ts";
+import "./db.ts";
 
-const headers = new Headers({
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-  });
+// Load environment variables from .env file
+const env = config();
 
-serve(async (req) => {
-    const url = new URL(req.url);
-    if (req.method === "OPTIONS") return new Response(null, { headers });
-  
-    if (req.method === "POST" && url.pathname === "/api/register") {
-      const res = await registerUser(req);
-      headers.forEach((v, k) => res.headers.set(k, v));
-      return res;
-    }
-  
-    return new Response("Not Found", { status: 404, headers });
-}, { port: 8000 });
+// Initialize MongoDB connection and collections
+const app = new Application();
+const router = new Router();
+
+
+// Middleware to handle CORS
+router.post("/register", register);
+
+
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+console.log("Server running on http://localhost:8000");
+await app.listen({ port: 8000 });

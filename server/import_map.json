@@ -1,0 +1,7 @@
+{
+    "imports": {
+      "oak": "https://deno.land/x/oak@v12.6.1/mod.ts",
+      "bcrypt": "https://deno.land/x/bcrypt@v0.4.1/mod.ts",
+      "dotenv": "https://deno.land/x/dotenv/mod.ts"
+    }
+  }
