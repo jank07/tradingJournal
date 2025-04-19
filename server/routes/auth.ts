@@ -53,6 +53,5 @@ export async function register(ctx: RouterContext<"/register">) {
   ctx.response.body = { 
     message: "User registered", 
     userId: newUser._id.$oid, 
-    token,
   };
 }

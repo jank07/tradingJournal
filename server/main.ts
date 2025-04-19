@@ -8,18 +8,21 @@ import "./db.ts";
 
 // Load environment variables from .env file
 const env = config();
+const app = new Application();
+// Middleware to handle CORS
+app.use(
+  oakCors({
+    origin: "http://localhost:5173", // exact origin of frontend
+    credentials: true,               // allow cookies to be sent
+  }),
+);
 
 // Initialize MongoDB connection and collections
-const app = new Application();
 const router = new Router();
 
-
-// Middleware to handle CORS
 router.post("/register", register);
 router.post("/login", login);
 
-// Middleware to handle CORS
-app.use(oakCors());
 
 // Securing the /protected route with JWT authentication
 router.get("/protected", authMiddleware, (ctx) => {

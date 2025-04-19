@@ -21,6 +21,13 @@ export async function login(ctx: RouterContext) {
   }
   const token = await generateToken( payload );
   
+  ctx.cookies.set("token", token, {
+    httpOnly: true,        // not accessible from JavaScript
+    secure: false,         
+    sameSite: "Lax",       // CSRF protection
+    maxAge: 60 * 60,       
+    path: "/",
+  });
 
   ctx.response.status = 200;
   ctx.response.body = { token };
