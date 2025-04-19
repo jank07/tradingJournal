@@ -1,6 +1,7 @@
 import { RouterContext } from "oak";
-import { users } from "../db.ts";
+import { getUserByEmail, createUser } from "../db.ts";
 import { hash } from "bcrypt";
+import { generateToken } from "./tokenAuth.ts";
 
 export async function register(ctx: RouterContext<"/register">) {
   const { email, password } = await ctx.request.body({ type: "json" }).value;
@@ -22,22 +23,36 @@ export async function register(ctx: RouterContext<"/register">) {
   }
 
   // Check if user exists 
-  const exists = await users.findOne({ email });
-  if (exists) {
-    ctx.response.status = 409;
-    ctx.response.body = { error: "User already exists" };
+  // const exists = await users.findOne({ email });
+  // if (exists) {
+  //   ctx.response.status = 409;
+  //   ctx.response.body = { error: "User already exists" };
+  //   return;
+  // }
+  const existingUser = await getUserByEmail(email);
+  if (existingUser) {
+    ctx.response.status = 400;
+    ctx.response.body = { message: "User already exists" };
     return;
   }
 
   // Hash password and insert user into database
   const passwordHash = await hash(password);
-  const insertId = await users.insertOne({
-    email,
-    passwordHash,
-    createdAt: new Date(),
-  });
+  const newUser = await createUser({ email, passwordHash });
+
+
+  
+  // const insertId = await users.insertOne({
+  //   email,
+  //   passwordHash,
+  //   createdAt: new Date(),
+  // });
 
     // Return success response
   ctx.response.status = 201;
-  ctx.response.body = { message: "User registered", userId: insertId.$oid };
+  ctx.response.body = { 
+    message: "User registered", 
+    userId: newUser._id.$oid, 
+    token,
+  };
 }

@@ -20,7 +20,6 @@ const connectToMongoDB = async () => {
       await client.connect(
         mongoURI,
       );
-    //   "mongodb+srv://admin:admin@cluster0.snaxmvk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&authMechanism=SCRAM-SHA-1"
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
       console.log("Successfully connected to MongoDB");
       return client.database(env["MONGO_DB_NAME"]);
@@ -33,4 +32,20 @@ const connectToMongoDB = async () => {
 
 const dbConnection = await connectToMongoDB();
 const db = client.database(env["MONGO_DB_NAME"]);
-export const users = db.collection("users");
+export const users = db.collection<User>("users");
+
+export interface User {
+  _id?: { $oid: string };
+  email: string;
+  passwordHash: string;
+  createdAt: Date;
+}
+
+export async function getUserByEmail(email: string) {
+  return await users.findOne({ email });
+}
+
+export async function createUser(user: User) {
+  const insertId = await users.insertOne(user);
+  return { _id: insertId, ...user };
+}
