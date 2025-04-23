@@ -1,43 +1,27 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom';
-import { Routes, Route } from "react-router-dom";
-import Register from './pages/Register';
-import Login from './pages/Login';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import AddTrade from "./pages/AddTrade";
+import Navbar from "./components/Navbar";
 
 function App() {
-
   return (
-    <>
-      <nav>
-        <Link to={'/'}>
-          <a>Home page</a>
-        </Link>
-        <Link to={'/journal'}>
-          <a>Trading journal</a>
-        </Link>
-        <Link to={'/login'}>
-          <a>Login</a>
-        </Link>
-        <Link to={'/'}>
-          <a>Home page</a> 
-        </Link>
-        <Link to={'/register'}>
-          <a>Register</a>
-        </Link>
-      </nav>
-      <h1>Trading journal</h1>
-      
-      <Routes>
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      </Routes> 
-
-    </>
-    
+    <AuthProvider>
+       <div className="min-h-screen flex flex-col bg-gray-900 text-white">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center p-4">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/add-trade" element={<AddTrade />} />
+        </Routes>
+        </main>
+        </div>
+    </AuthProvider>
   );
 }
 
-export default App
+export default App;

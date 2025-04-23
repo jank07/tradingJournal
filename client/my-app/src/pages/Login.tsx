@@ -1,5 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // import kontekstu
+import LoadingOverlay from "../components/LoadingOverlay";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -7,12 +10,22 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+  const { isLoggedIn, login } = useAuth(); // użycie AuthContext
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (isLoggedIn) {
+      setError("Jesteś już zalogowany. Wyloguj się, aby kontynuować.");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      await new Promise((r) => setTimeout(r, 1000)); // testowy delay
       const res = await axios.post("http://localhost:8000/login", {
         email,
         password,
@@ -21,9 +34,8 @@ export default function Login() {
       const { token } = res.data;
 
       if (token) {
-        localStorage.setItem("token", token);
-        alert("Zalogowano pomyślnie!");
-    
+        login(token); // zapis tokenu i ustawienie isLoggedIn
+        navigate("/"); // przekierowanie np. do dashboardu
       } else {
         setError("Brak tokena w odpowiedzi");
       }
@@ -36,15 +48,18 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleLogin} className="max-w-md mx-auto mt-20 space-y-4">
-      <h2 className="text-2xl font-bold text-center">Logowanie</h2>
+    <>
+    {loading && <LoadingOverlay />}
+    <div className="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
+    <form onSubmit={handleLogin} className="flex flex-col space-y-4">
+      <h2 className="text-center text-2xl font-bold mb-6">Logowanie</h2>
 
       <input
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full p-2 border rounded"
+        className="p-3 rounded bg-black text-white border border-white focus:outline-none"
         required
       />
 
@@ -53,7 +68,7 @@ export default function Login() {
         placeholder="Hasło"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-2 border rounded"
+        className="p-3 rounded bg-black text-white border border-white focus:outline-none"
         required
       />
 
@@ -61,11 +76,13 @@ export default function Login() {
 
       <button
         type="submit"
-        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 flex justify-center items-center gap-2"
         disabled={loading}
-      >
-        {loading ? "Logowanie..." : "Zaloguj się"}
-      </button>
+      > Zaloguj się
+        </button>
+
     </form>
+    </div>
+    </>
   );
 }
