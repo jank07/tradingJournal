@@ -13,7 +13,7 @@ function App() {
         <Navbar />
         <main className="flex-1 flex items-center justify-center p-4">
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/add-trade" element={<AddTrade />} />

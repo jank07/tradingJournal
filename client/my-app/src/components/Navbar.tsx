@@ -7,16 +7,16 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-gray-800 text-white p-4 flex justify-between">
       <div className="flex space-x-4">
-        <Link to="/" className="hover:underline">Home</Link>
+        <Link to="/" className="hover:text-gray-500 text-white">Home</Link>
         {isLoggedIn ? (
           <>
-            <Link to="/add-trade" className="hover:underline">Dodaj trade</Link>
-            <Link to="/dashboard" className="hover:underline">Dashboard</Link>
+            <Link to="/add-trade" className="hover:text-gray-500 text-white">Dodaj trade</Link>
+            <Link to="/dashboard" className="hover:text-gray-500 text-white">Dashboard</Link>
           </>
         ) : (
           <>
-            <Link to="/login" className="hover:underline">Login</Link>
-            <Link to="/register" className="hover:underline">Register</Link>
+            <Link to="/login" className="hover:text-gray-500 text-white">Login</Link>
+            <Link to="/register" className="hover:text-gray-500 text-white">Register</Link>
           </>
         )}
       </div>

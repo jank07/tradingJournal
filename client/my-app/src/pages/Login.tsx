@@ -59,7 +59,7 @@ export default function Login() {
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="p-3 rounded bg-black text-white border border-white focus:outline-none"
+        className="p-3 rounded bg-black text-white  focus:outline-none"
         required
       />
 
@@ -68,7 +68,7 @@ export default function Login() {
         placeholder="Hasło"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="p-3 rounded bg-black text-white border border-white focus:outline-none"
+        className="p-3 rounded bg-black text-white  focus:outline-none"
         required
       />
 

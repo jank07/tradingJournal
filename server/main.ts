@@ -5,6 +5,8 @@ import { register } from "./routes/auth.ts";
 import { login } from "./routes/login.ts";
 import { authMiddleware } from "./middlewares/authJWT.ts";
 import "./db.ts";
+import { addTrade } from "./routes/trades.ts";
+import { getTrades } from "./routes/trades.ts";
 
 // Load environment variables from .env file
 const env = config();
@@ -22,6 +24,8 @@ const router = new Router();
 
 router.post("/register", register);
 router.post("/login", login);
+router.post("/trades", authMiddleware, addTrade);
+router.get("/trades", authMiddleware, getTrades);
 
 
 // Securing the /protected route with JWT authentication

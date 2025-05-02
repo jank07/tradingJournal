@@ -1,7 +1,8 @@
-import { RouterContext } from "oak";
 import { tradesCollection } from "../db.ts";
+import { RouterContext } from "oak";
 
 export async function addTrade(ctx: RouterContext) {
+
   const user = ctx.state.user;
   if (!user) {
     ctx.response.status = 401;
@@ -31,3 +32,15 @@ export async function addTrade(ctx: RouterContext) {
   ctx.response.status = 201;
   ctx.response.body = { message: "Trade saved", tradeId: inserted };
 }
+
+export const getTrades = async (ctx: RouterContext) => {
+  const user = ctx.state.user;
+  if (!user?.email) {
+    ctx.response.status = 401;
+    ctx.response.body = { message: "Unauthorized" };
+    return;
+  }
+
+  const trades = await tradesCollection.find({ userEmail: user.email }).toArray();
+  ctx.response.body = trades;
+};

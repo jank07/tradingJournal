@@ -33,6 +33,7 @@ const connectToMongoDB = async () => {
 const dbConnection = await connectToMongoDB();
 const db = client.database(env["MONGO_DB_NAME"]);
 export const users = db.collection<User>("users");
+export const tradesCollection = db.collection<User>("trades");
 
 export interface User {
   _id?: { $oid: string };

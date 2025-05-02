@@ -36,7 +36,7 @@ export default function Register() {
               value={email}
               required
               onChange={(e) => setEmail(e.target.value)}
-              className="p-3 rounded bg-black text-white border border-white focus:outline-none"
+              className="p-3 rounded bg-black text-white focus:outline-none"
             />
             <input
               type="password"
@@ -44,7 +44,7 @@ export default function Register() {
               value={password}
               required
               onChange={(e) => setPassword(e.target.value)}
-              className="p-3 rounded bg-black text-white border border-white focus:outline-none"
+              className="p-3 rounded bg-black text-white focus:outline-none"
             />
             <button
               type="submit"

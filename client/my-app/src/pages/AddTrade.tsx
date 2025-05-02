@@ -37,6 +37,7 @@ export default function AddTrade() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
+      console.log("Token:", token); // Debugging line to check the token
       await axios.post(
         "http://localhost:8000/trades",
         {
@@ -64,7 +65,7 @@ export default function AddTrade() {
       {loading && <LoadingOverlay />}
       <form
         onSubmit={handleSubmit}
-        className="max-w-md mx-auto mt-20 space-y-4"
+        className="p-8 flex flex-col max-w-md mx-auto mt-20 space-y-4 bg-gray-800 rounded-lg shadow-md"
       >
         <h2 className="text-2xl font-bold text-center">Dodaj Trade</h2>
 
@@ -74,7 +75,7 @@ export default function AddTrade() {
           placeholder="Symbol (np. NASDAQ)"
           value={formData.symbol}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="p-3 rounded bg-black text-white focus:outline-none"
           required
         />
 
@@ -85,7 +86,7 @@ export default function AddTrade() {
           placeholder="RR (np. 2.5)"
           value={formData.rr}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="p-3 rounded bg-black text-white focus:outline-none"
           required
         />
 
@@ -94,7 +95,10 @@ export default function AddTrade() {
           name="date"
           value={formData.date}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="p-3 rounded bg-black text-white focus:outline-none"
+          style={{
+            colorScheme: "dark", // Ensures the calendar icon and text adapt to the dark background
+          }}
           required
         />
 
@@ -102,7 +106,7 @@ export default function AddTrade() {
           name="result"
           value={formData.result}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="p-3 rounded bg-black text-white focus:outline-none"
           required
         >
           <option value="win">Wygrana</option>
