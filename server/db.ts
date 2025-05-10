@@ -1,7 +1,7 @@
 import {
     Bson,
     MongoClient,
-  } from "https://deno.land/x/mongo@v0.34.0/mod.ts";
+  } from "https://deno.land/x/mongo@v0.32.0/mod.ts";
 import { config } from "dotenv";
 
 const env = config();

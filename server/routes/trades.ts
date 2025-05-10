@@ -84,10 +84,19 @@ export const editTrade = async (ctx: RouterContext) => {
 
   const { symbol, rr, date, result } = await ctx.request.body({ type: "json" }).value;
 
-  const updated = await tradesCollection.updateOne(
-    { _id: new Bson.ObjectId(id), userEmail: user.email },
-    { $set: { symbol, rr, date, result } }
-  );
+  let objectId: Bson.ObjectId;
+  try {
+  objectId = new Bson.ObjectId(id); // This must succeed
+} catch {
+  ctx.response.status = 400;
+  ctx.response.body = { message: "Invalid trade ID format" };
+  return;
+}
+
+const updated = await tradesCollection.updateOne(
+  { _id: objectId, userEmail: user.email },
+  { $set: { symbol, rr, date, result } }
+);
 
   if (updated.modifiedCount === 0) {
     ctx.response.status = 404;
