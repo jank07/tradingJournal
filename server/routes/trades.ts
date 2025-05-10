@@ -1,5 +1,6 @@
 import { tradesCollection } from "../db.ts";
 import { RouterContext } from "oak";
+import { Bson } from "https://deno.land/x/mongo@v0.32.0/mod.ts";
 
 export async function addTrade(ctx: RouterContext) {
 
@@ -43,4 +44,56 @@ export const getTrades = async (ctx: RouterContext) => {
 
   const trades = await tradesCollection.find({ userEmail: user.email }).toArray();
   ctx.response.body = trades;
+};
+
+export const deleteTrade = async (ctx: RouterContext) => {
+  const user = ctx.state.user;
+  const { id } = ctx.params;
+
+  if (!user || !id) {
+    ctx.response.status = 401;
+    ctx.response.body = { message: "Unauthorized or Missing ID" };
+    return;
+  }
+
+  const deleted = await tradesCollection.deleteOne({
+    _id: new Bson.ObjectId(id),
+    userEmail: user.email,
+  });
+
+  if (deleted === 0) {
+    ctx.response.status = 404;
+    ctx.response.body = { message: "Trade not found" };
+  } else {
+    ctx.response.status = 200;
+    ctx.response.body = { message: "Trade deleted" };
+  }
+};
+
+export const editTrade = async (ctx: RouterContext) => {
+  const user = ctx.state.user;
+  const { id } = ctx.params;
+
+  console.log("Received PUT request for trade ID:", id);  // Log the ID
+
+  if (!user || !id) {
+    ctx.response.status = 401;
+    ctx.response.body = { message: "Unauthorized or Missing ID" };
+    return;
+  }
+
+  const { symbol, rr, date, result } = await ctx.request.body({ type: "json" }).value;
+
+  const updated = await tradesCollection.updateOne(
+    { _id: new Bson.ObjectId(id), userEmail: user.email },
+    { $set: { symbol, rr, date, result } }
+  );
+
+  if (updated.modifiedCount === 0) {
+    ctx.response.status = 404;
+    ctx.response.body = { message: "Trade not found or not modified" };
+  } else {
+    ctx.response.status = 200;
+    ctx.response.body = { message: "Trade updated" };
+  }
 };

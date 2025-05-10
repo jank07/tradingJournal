@@ -7,6 +7,8 @@ import { authMiddleware } from "./middlewares/authJWT.ts";
 import "./db.ts";
 import { addTrade } from "./routes/trades.ts";
 import { getTrades } from "./routes/trades.ts";
+import { editTrade } from "./routes/trades.ts";
+import { deleteTrade } from "./routes/trades.ts";
 
 // Load environment variables from .env file
 const env = config();
@@ -26,6 +28,8 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/trades", authMiddleware, addTrade);
 router.get("/trades", authMiddleware, getTrades);
+router.delete("/trades/:id", authMiddleware, deleteTrade);
+router.put("/trades/:id", authMiddleware, editTrade);
 
 
 // Securing the /protected route with JWT authentication

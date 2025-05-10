@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import EditTradeModal from "../pages/EditTradeModal";
 import { useAuth } from "../context/AuthContext";
 import {
   PieChart,
@@ -20,6 +21,7 @@ interface Trade {
 
 export default function Dashboard() {
   const [trades, setTrades] = useState<Trade[]>([]);
+  const [editingTrade, setEditingTrade] = useState<Trade | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -31,23 +33,24 @@ export default function Dashboard() {
 
   const { isLoggedIn } = useAuth();
 
-  useEffect(() => {
-    const fetchTrades = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/trades", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setTrades(res.data);
-      } catch (err) {
-        setError("Błąd podczas pobierania trade’ów");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchTrades = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:8000/trades", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setTrades(res.data);
+    } catch (err) {
+      setError("Błąd podczas pobierania trade’ów");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (isLoggedIn) fetchTrades();
   }, [isLoggedIn]);
 
@@ -210,11 +213,33 @@ export default function Dashboard() {
                   <strong>Wynik:</strong>{" "}
                   {trade.result === "win" ? "✅ Wygrana" : "❌ Przegrana"}
                 </p>
+                <button
+                  onClick={() => setEditingTrade(trade)}
+                  className="mt-2 bg-white text-black px-3 py-1 rounded">
+                  Edytuj
+                </button>
               </div>
             ))}
           </div>
         </>
       )}
+      {editingTrade && (
+      <EditTradeModal
+        trade={editingTrade}
+        onClose={() => setEditingTrade(null)}
+        onSave={() => {
+          setEditingTrade(null);
+          setLoading(true);
+          axios
+            .get("http://localhost:8000/trades", {
+              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            })
+            .then((res) => setTrades(res.data))
+            .catch(() => setError("Błąd podczas pobierania trade’ów"))
+            .finally(() => setLoading(false));
+        }}
+      />
+    )}
     </div>
   );
 }
