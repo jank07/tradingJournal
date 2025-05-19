@@ -1,14 +1,14 @@
-import { Application, Router } from "oak";
-import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
-import { config } from "dotenv";
-import { register } from "./routes/auth.ts";
-import { login } from "./routes/login.ts";
-import { authMiddleware } from "./middlewares/authJWT.ts";
-import "./db.ts";
-import { addTrade } from "./routes/trades.ts";
-import { getTrades } from "./routes/trades.ts";
-import { editTrade } from "./routes/trades.ts";
-import { deleteTrade } from "./routes/trades.ts";
+import { Application, Router } from 'oak';
+import { oakCors } from 'https://deno.land/x/cors@v1.2.2/mod.ts';
+import { config } from 'dotenv';
+import { register } from './routes/auth.ts';
+import { login } from './routes/login.ts';
+import { authMiddleware } from './middlewares/authJWT.ts';
+import './db.ts';
+import { addTrade } from './routes/trades.ts';
+import { getTrades } from './routes/trades.ts';
+import { editTrade } from './routes/trades.ts';
+import { deleteTrade } from './routes/trades.ts';
 
 // Load environment variables from .env file
 const env = config();
@@ -16,29 +16,28 @@ const app = new Application();
 // Middleware to handle CORS
 app.use(
   oakCors({
-    origin: "http://localhost:5173", // exact origin of frontend
-    credentials: true,               // allow cookies to be sent
-  }),
+    origin: 'http://localhost:5173', // exact origin of frontend
+    credentials: true, // allow cookies to be sent
+  })
 );
 
 // Initialize MongoDB connection and collections
 const router = new Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.post("/trades", authMiddleware, addTrade);
-router.get("/trades", authMiddleware, getTrades);
-router.delete("/trades/:id", authMiddleware, deleteTrade);
-router.put("/trades/:id", authMiddleware, editTrade);
-
+router.post('/register', register);
+router.post('/login', login);
+router.post('/trades', authMiddleware, addTrade);
+router.get('/trades', authMiddleware, getTrades);
+router.delete('/trades/:id', authMiddleware, deleteTrade);
+router.put('/trades/:id', authMiddleware, editTrade);
 
 // Securing the /protected route with JWT authentication
-router.get("/protected", authMiddleware, (ctx) => {
-    ctx.response.body = { message: "Protected data", user: ctx.state.user };
-  });
+router.get('/protected', authMiddleware, (ctx) => {
+  ctx.response.body = { message: 'Protected data', user: ctx.state.user };
+});
 
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-console.log("Server running on http://localhost:8000");
+console.log('Server running on http://localhost:8000');
 await app.listen({ port: 8000 });

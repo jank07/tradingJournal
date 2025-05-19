@@ -1,30 +1,37 @@
-import { create, getNumericDate, Header, verify } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
-import { config } from "https://deno.land/x/dotenv/mod.ts";
+import {
+  create,
+  getNumericDate,
+  Header,
+  verify,
+} from 'https://deno.land/x/djwt@v3.0.2/mod.ts';
+import { config } from 'https://deno.land/x/dotenv/mod.ts';
 
 const env = config();
 
 // Load environment variables from .env file
-const SECRET_KEY = (env["JWT_SECRET"]);
+const SECRET_KEY = env['JWT_SECRET'];
 
 // Check if JWT_SECRET is set in .env file
 if (!SECRET_KEY) {
-    throw new Error("JWT_SECRET not set in .env");
-  }
+  throw new Error('JWT_SECRET not set in .env');
+}
 
-const header : Header = {
-  alg: "HS512",
-  typ: "JWT",
+const header: Header = {
+  alg: 'HS512',
+  typ: 'JWT',
 };
 
 const keyPromise = await crypto.subtle.importKey(
-  "raw",
+  'raw',
   new TextEncoder().encode(SECRET_KEY),
-  { name: "HMAC", hash: "SHA-512" },
+  { name: 'HMAC', hash: 'SHA-512' },
   false,
-  ["sign", "verify"],
+  ['sign', 'verify']
 );
 
-export async function generateToken(payload: Record<string, unknown>): Promise<string> {
+export async function generateToken(
+  payload: Record<string, unknown>
+): Promise<string> {
   const key = await keyPromise; // Await the key initialization
   const jwtPayload = {
     ...payload,
@@ -34,12 +41,11 @@ export async function generateToken(payload: Record<string, unknown>): Promise<s
   return token;
 }
 
-
 export async function verifyToken(token: string) {
-    try {
-      const key = await keyPromise;
-      return await verify(token, key);
-    } catch (err) {
-      throw new Error("Invalid token");
-    }
+  try {
+    const key = await keyPromise;
+    return await verify(token, key);
+  } catch (err) {
+    throw new Error('Invalid token');
   }
+}

@@ -9,7 +9,7 @@ export default function AddTrade() {
     symbol: "",
     rr: "",
     date: "",
-    result: "win", 
+    result: "win",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,7 +30,7 @@ export default function AddTrade() {
     setError("");
 
     if (!isLoggedIn) {
-      setError("Musisz być zalogowany, aby dodać trade.");
+      setError("You must be logged in to add a trade.");
       return;
     }
 
@@ -50,11 +50,11 @@ export default function AddTrade() {
           },
         }
       );
-      alert("Trade dodany!");
+      alert("Trade added!");
       navigate("/");
     } catch (err: any) {
       console.error(err);
-      setError("Błąd dodawania trade’u.");
+      setError("There was an error.");
     } finally {
       setLoading(false);
     }
@@ -67,12 +67,12 @@ export default function AddTrade() {
         onSubmit={handleSubmit}
         className="p-8 flex flex-col max-w-md mx-auto mt-20 space-y-4 bg-gray-800 rounded-lg shadow-md"
       >
-        <h2 className="text-2xl font-bold text-center">Dodaj Trade</h2>
+        <h2 className="text-2xl font-bold text-center">Add trade</h2>
 
         <input
           type="text"
           name="symbol"
-          placeholder="Symbol (np. NASDAQ)"
+          placeholder="Symbol"
           value={formData.symbol}
           onChange={handleChange}
           className="p-3 rounded bg-black text-white focus:outline-none"
@@ -83,7 +83,8 @@ export default function AddTrade() {
           type="number"
           name="rr"
           step="0.01"
-          placeholder="RR (np. 2.5)"
+          placeholder="RR (Reward/Risk)"
+          min="0"
           value={formData.rr}
           onChange={handleChange}
           className="p-3 rounded bg-black text-white focus:outline-none"
@@ -109,8 +110,8 @@ export default function AddTrade() {
           className="p-3 rounded bg-black text-white focus:outline-none"
           required
         >
-          <option value="win">Wygrana</option>
-          <option value="lose">Przegrana</option>
+          <option value="win">Win</option>
+          <option value="lose">Loss</option>
         </select>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -120,7 +121,7 @@ export default function AddTrade() {
           className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
           disabled={loading}
         >
-          Dodaj Trade
+          Add trade
         </button>
       </form>
     </>
