@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
+import TradeList from '../components/TradeList';
+import TradeStats from '../components/TradeStats';
+import TradePieChart from '../components/TradePieChart';
+import TradeFilterSelect from '../components/TradeFilterSelect';
+import TradeSortSelect from '../components/TradeSortSelect';
 import EditTradeModal from '../pages/EditTradeModal';
+
 import { useAuth } from '../context/AuthContext';
 import {
   PieChart,
@@ -36,12 +42,7 @@ export default function Dashboard() {
   const fetchTrades = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:8000/trades', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await api.get('/trades');
       setTrades(res.data);
     } catch (err) {
       setError('Fail to fetch trades');
@@ -51,15 +52,9 @@ export default function Dashboard() {
   };
 
   const handleDelete = async (id: string) => {
-    const token = localStorage.getItem('token');
     try {
-      await axios.delete(`http://localhost:8000/trades/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // Refresh or update state
-      fetchTrades(); // or filter out deleted trade from state
+      await api.delete(`/trades/${id}`);
+      fetchTrades();
     } catch (err) {
       console.error('Failed to delete trade:', err);
     }
@@ -124,32 +119,19 @@ export default function Dashboard() {
 
   return (
     <div className='bg-gray-800 max-w-5xl mx-auto mt-10 px-4'>
-      <h2 className='text-2xl font-bold text-center mb-6'>Twoje Trade’y</h2>
+      <h2 className='text-2xl font-bold text-center mb-6'>Your Trades</h2>
       {trades.length === 0 ? (
         <p className='text-center'>No trades.</p>
       ) : (
         <>
           {/* Filters and Sorting */}
           <div className='flex flex-wrap gap-4 justify-center mb-6'>
-            <select
-              className='p-3 rounded bg-black text-white  focus:outline-none'
+            <TradeFilterSelect
               value={filterResult}
-              onChange={(e) => setFilterResult(e.target.value)}
-            >
-              <option value='all'>All</option>
-              <option value='win'>Only wins</option>
-              <option value='lose'>Only losses</option>
-            </select>
+              onChange={setFilterResult}
+            />
 
-            <select
-              className='p-3 rounded bg-black text-white  focus:outline-none'
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-            >
-              <option value='none'>No sorting</option>
-              <option value='asc'>RR Ascending </option>
-              <option value='desc'>RR Descending</option>
-            </select>
+            <TradeSortSelect value={sortOrder} onChange={setSortOrder} />
 
             <input
               type='date'
@@ -173,75 +155,26 @@ export default function Dashboard() {
           </div>
 
           {/* Stats */}
-          <div className='text-center mb-6 space-y-2'>
-            <p className='text-lg'>
-              📊 <strong>Średni RR:</strong> {averageRR}
-            </p>
-          </div>
+          <TradeStats
+            averageRR={averageRR}
+            bestTrade={
+              bestTrade ? { symbol: bestTrade.symbol, rr: bestTrade.rr } : null
+            }
+            worstTrade={
+              worstTrade
+                ? { symbol: worstTrade.symbol, rr: worstTrade.rr }
+                : null
+            }
+          />
           {/* Pie Chart */}
-          <div className='w-full md:w-1/2 mx-auto mb-8'>
-            <ResponsiveContainer width='100%' height={300}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey='value'
-                  nameKey='name'
-                  cx='50%'
-                  cy='50%'
-                  outerRadius={100}
-                  label
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <TradePieChart pieData={pieData} colors={COLORS} />
 
           {/* Trades List */}
-          <div className='flex flex-wrap gap-4 justify-center'>
-            {filteredTrades.map((trade) => (
-              <div
-                key={trade._id}
-                className={`w-64 p-4 border rounded shadow text-white ${
-                  trade.result === 'win' ? 'bg-green-700' : 'bg-red-700'
-                }`}
-              >
-                <p>
-                  <strong>Symbol:</strong> {trade.symbol}
-                </p>
-                <p>
-                  <strong>RR:</strong> {trade.rr}
-                </p>
-                <p>
-                  <strong>Data:</strong>{' '}
-                  {new Date(trade.date).toLocaleDateString()}
-                </p>
-                <p>
-                  <strong>Wynik:</strong>{' '}
-                  {trade.result === 'win' ? '✅ Wygrana' : '❌ Przegrana'}
-                </p>
-                <button
-                  onClick={() => setEditingTrade(trade)}
-                  className='mt-2 bg-white text-black px-3 py-1 rounded'
-                >
-                  Edytuj
-                </button>
-                <button
-                  className='bg-red-500 text-white px-2 py-1 rounded'
-                  onClick={() => handleDelete(trade._id)}
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
+          <TradeList
+            trades={filteredTrades}
+            onEdit={setEditingTrade}
+            onDelete={handleDelete}
+          />
         </>
       )}
       {editingTrade && (
@@ -251,14 +184,10 @@ export default function Dashboard() {
           onSave={() => {
             setEditingTrade(null);
             setLoading(true);
-            axios
-              .get('http://localhost:8000/trades', {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-              })
+            api
+              .get('/trades')
               .then((res) => setTrades(res.data))
-              .catch(() => setError('Błąd podczas pobierania trade’ów'))
+              .catch(() => setError('Error fetching trades'))
               .finally(() => setLoading(false));
           }}
         />

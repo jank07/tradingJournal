@@ -1,6 +1,5 @@
-// src/components/EditTradeModal.tsx
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 
 interface EditTradeModalProps {
   trade: {
@@ -26,34 +25,23 @@ export default function EditTradeModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    console.log('Token:', token); // Debugging line to check the token
-    console.log('Data being sent:', { symbol, rr, date, result });
     try {
-      const response = await axios.put(
-        `http://localhost:8000/trades/${trade._id}`,
-        {
-          symbol,
-          rr,
-          date,
-          result,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.put(`/trades/${trade._id}`, {
+        symbol,
+        rr,
+        date,
+        result,
+      });
       console.log('Trade updated successfully', response.data);
       onSave();
     } catch (error) {
       if (error && typeof error === 'object' && 'response' in error) {
-        // @ts-expect-error: error.response might exist
+        // Check if error has a response property
         console.error('Error updating trade:', error.response);
       } else {
         console.error('Error updating trade:', error);
       }
-      alert("Wystąpił błąd podczas aktualizacji trade'u.");
+      alert('Error updating trade');
     }
   };
 

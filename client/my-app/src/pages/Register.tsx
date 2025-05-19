@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import LoadingOverlay from '../components/LoadingOverlay';
 
 export default function Register() {
@@ -12,7 +12,7 @@ export default function Register() {
     e.preventDefault();
     setLoading(true); // loading true when request is sent
     try {
-      const res = await axios.post('http://localhost:8000/register', {
+      const res = await api.post('/register', {
         email,
         password,
       });
@@ -28,7 +28,7 @@ export default function Register() {
     <>
       {loading && <LoadingOverlay />}
       <div className='bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md'>
-        <h2 className='text-center text-2xl font-bold mb-6'>Zarejestruj się</h2>
+        <h2 className='text-center text-2xl font-bold mb-6'>Register</h2>
         <form onSubmit={handleSubmit} className='flex flex-col space-y-4'>
           <input
             type='email'
@@ -40,7 +40,7 @@ export default function Register() {
           />
           <input
             type='password'
-            placeholder='Hasło'
+            placeholder='Password'
             value={password}
             required
             onChange={(e) => setPassword(e.target.value)}
@@ -51,7 +51,7 @@ export default function Register() {
             disabled={loading}
             className='w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 flex justify-center items-center gap-2'
           >
-            Zarejestruj się
+            Register
           </button>
         </form>
         {message && <p className='mt-4 text-center text-gray-700'>{message}</p>}

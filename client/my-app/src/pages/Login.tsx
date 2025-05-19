@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // import kontekstu
+import { useAuth } from '../context/AuthContext';
 import LoadingOverlay from '../components/LoadingOverlay';
 
 export default function Login() {
@@ -11,22 +11,22 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { isLoggedIn, login } = useAuth(); // użycie AuthContext
+  const { isLoggedIn, login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (isLoggedIn) {
-      setError('Jesteś już zalogowany. Wyloguj się, aby kontynuować.');
+      setError('You are logged in.');
       return;
     }
 
     setLoading(true);
 
     try {
-      await new Promise((r) => setTimeout(r, 1000)); // testowy delay
-      const res = await axios.post('http://localhost:8000/login', {
+      await new Promise((r) => setTimeout(r, 1000));
+      const res = await api.post('/login', {
         email,
         password,
       });
@@ -34,14 +34,14 @@ export default function Login() {
       const { token } = res.data;
 
       if (token) {
-        login(token); // zapis tokenu i ustawienie isLoggedIn
-        navigate('/'); // przekierowanie np. do dashboardu
+        login(token);
+        navigate('/'); // Redirect to the dashboard or home page
       } else {
-        setError('Brak tokena w odpowiedzi');
+        setError('No token received');
       }
     } catch (err: any) {
       console.error(err);
-      setError('Błąd logowania. Sprawdź dane.');
+      setError('Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,7 @@ export default function Login() {
       {loading && <LoadingOverlay />}
       <div className='bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md'>
         <form onSubmit={handleLogin} className='flex flex-col space-y-4'>
-          <h2 className='text-center text-2xl font-bold mb-6'>Logowanie</h2>
+          <h2 className='text-center text-2xl font-bold mb-6'>Login</h2>
 
           <input
             type='email'
@@ -65,7 +65,7 @@ export default function Login() {
 
           <input
             type='password'
-            placeholder='Hasło'
+            placeholder='Password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className='p-3 rounded bg-black text-white  focus:outline-none'
@@ -80,7 +80,7 @@ export default function Login() {
             disabled={loading}
           >
             {' '}
-            Zaloguj się
+            Login
           </button>
         </form>
       </div>
