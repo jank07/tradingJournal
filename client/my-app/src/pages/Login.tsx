@@ -49,7 +49,7 @@ export default function Login() {
 
   return (
     <>
-      {loading && <LoadingOverlay />}
+      <LoadingOverlay loading={loading} />
       <div className='bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md'>
         <form onSubmit={handleLogin} className='flex flex-col space-y-4'>
           <h2 className='text-center text-2xl font-bold mb-6'>Login</h2>

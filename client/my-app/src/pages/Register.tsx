@@ -26,7 +26,7 @@ export default function Register() {
 
   return (
     <>
-      {loading && <LoadingOverlay />}
+      <LoadingOverlay loading={loading} />
       <div className='bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md'>
         <h2 className='text-center text-2xl font-bold mb-6'>Register</h2>
         <form onSubmit={handleSubmit} className='flex flex-col space-y-4'>

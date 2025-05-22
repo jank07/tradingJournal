@@ -1,6 +1,11 @@
 import React from 'react';
 
-export default function LoadingOverlay() {
+interface LoadingOverlayProps {
+  loading: boolean;
+}
+
+export default function LoadingOverlay({ loading }: LoadingOverlayProps) {
+  if (!loading) return null;
   return (
     <div className='w-full fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[9999]'>
       <svg
