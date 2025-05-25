@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+deno.lock
+npm/
+
+# build
+dist/
+build/
+
+# env vars
+.env
+
+# misc
+.DS_Store
